@@ -1,10 +1,18 @@
 import logo from "@/assests/logo-icon.png";
 import Image from "next/image";
-const Header = () => {
+
+import { io } from "next/cache";
+import { Suspense } from "react";
+
+const CurrentDate = async () => {
+  await io();
   const date = new Date().toLocaleDateString("bn-BD", {
     dateStyle: "full",
   });
-  console.log(date);
+  return <p className="text-[12px] text-gray-600">{date}</p>;
+};
+
+const Header = () => {
   return (
     <div>
       <div className="border-b-2 border-gray-100">
@@ -19,7 +27,9 @@ const Header = () => {
             />
             <div>
               <h1 className="text-[18px] font-bold">বাজার দর</h1>
-              <p className="text-[12px] text-gray-600">{date}</p>
+              <Suspense fallback={<p className="text-[12px] text-gray-600" />}>
+                <CurrentDate />
+              </Suspense>
             </div>
           </div>
           <div className="flex gap-3">
