@@ -3,6 +3,7 @@ import Image from "next/image";
 
 import { io } from "next/cache";
 import { Suspense } from "react";
+import UserInfoButton from "./UserInfoButton";
 
 const CurrentDate = async () => {
   await io();
@@ -32,10 +33,7 @@ const Header = () => {
               </Suspense>
             </div>
           </div>
-          <div className="flex gap-3">
-            <button className="btn">সাইন ইন</button>
-            <button className="btn bg-green-500 text-white">সাইন আপ</button>
-          </div>
+          <UserInfoButton/>
         </div>
       </div>
     </div>
