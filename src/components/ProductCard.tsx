@@ -1,4 +1,7 @@
+import Link from "next/link";
+
 interface Product {
+  id: number;
   categoryIcon: string;
   image: string;
   nameBn: string;
@@ -12,7 +15,10 @@ interface Product {
 
 const ProductCard = ({ product }: { product: Product }) => {
   return (
-    <div className="rounded-xl border border-gray-200 bg-[#fbfdfb] p-3">
+    <Link
+      href={`/product/${product.id}`}
+      className="block rounded-xl border border-gray-200 p-3 transition hover:border-green-300 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-700"
+    >
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f0f5f1] text-xl">
           {product.image}
@@ -47,7 +53,7 @@ const ProductCard = ({ product }: { product: Product }) => {
           </span>
         )}
       </div>
-    </div>
+    </Link>
   );
 };
 

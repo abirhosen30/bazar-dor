@@ -1,7 +1,8 @@
-import React from "react";
+import Link from "next/link";
 import MarqueeText from "react-marquee-text";
 
 interface Product {
+  id: number;
   categoryIcon: string;
   nameBn: string;
   today: number;
@@ -27,9 +28,10 @@ const Marquee = async () => {
       <MarqueeText direction="right" duration={15} className="py-1">
         <div className="flex w-max animate-marquee items-center gap-8 whitespace-nowrap">
           {[...data, ...data].map((product, index) => (
-            <div
+            <Link
               key={`${product.nameBn}-${index}`}
-              className="flex items-center gap-2 text-sm  border-r-2 px-3 border-gray-100"
+              href={`/product/${product.id}`}
+              className="flex items-center gap-2 border-r-2 border-gray-100 px-3 text-sm"
             >
               <span>{product.categoryIcon}</span>
 
@@ -50,7 +52,7 @@ const Marquee = async () => {
               >
                 {product.change.dir === "up" ? "▲" : "▼"} {product.change.pct}%
               </span>
-            </div>
+            </Link>
           ))}
         </div>
       </MarqueeText>

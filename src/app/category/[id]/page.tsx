@@ -80,7 +80,7 @@ const CategoryPage = async ({
         </section>
 
         {/* Products */}
-        <section className="mt-4">
+        <section id="products" className="mt-4">
           <p className="mb-3 text-xs text-gray-500">
             এই ক্যাটাগরির সকল পণ্য
           </p>
