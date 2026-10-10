@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# বাজার দর
 
-## Getting Started
+বাংলাদেশের নিত্যপ্রয়োজনীয় পণ্যের আজকের দাম, দামের পরিবর্তন এবং বাজারভিত্তিক
+তুলনা দেখানোর Next.js অ্যাপ।
 
-First, run the development server:
+## চালু করা
+
+Node.js ইনস্টল করে dependency ইনস্টল করুন:
+
+```bash
+npm install
+```
+
+প্রজেক্টের root-এ `.env` ফাইলে প্রয়োজনীয় environment variable দিন:
+
+```env
+MONGODB_URL=
+BETTER_AUTH_URL=http://localhost:3000
+BETTER_AUTH_SECRET=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+```
+
+`MONGODB_URL`, `BETTER_AUTH_URL`, এবং `BETTER_AUTH_SECRET` আবশ্যক। Google/GitHub
+OAuth চালু করতে প্রতিটি provider-এর Client ID ও Client Secret যোগ করুন এবং OAuth
+console-এ `http://localhost:3000/api/auth/callback/google` অথবা
+`http://localhost:3000/api/auth/callback/github` callback URL নিবন্ধন করুন।
+Production deploy-এ Vercel-এর Project Settings → Environment Variables-এ একই
+production values যোগ করতে হবে। Secret কখনও source control-এ commit করবেন না।
+
+Development server চালান:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+অ্যাপটি [http://localhost:3000](http://localhost:3000)-এ খুলুন।
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## যাচাই
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run lint
+npm run build
+```
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+পণ্যের তথ্য `https://openapi.programming-hero.com/api/bazardor` API থেকে আসে।

@@ -1,20 +1,45 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import SocialAuthButtons from "@/components/SocialAuthButtons";
+import toast from "react-hot-toast";
 
 const SignInPage = () => {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    const notice = query.get("notice");
+
+    if (notice === "login-required") {
+      toast.error("পণ্যের বিস্তারিত দেখতে আগে সাইন ইন করুন।");
+    } else if (notice === "registered") {
+      toast.success("সাইন আপ সফল হয়েছে। এখন সাইন ইন করুন।");
+    }
+
+    if (notice) {
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage("");
 
-    const formData = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    if (!form.checkValidity()) {
+      const message = "সঠিক ইমেইল ও পাসওয়ার্ড দিয়ে ফর্মটি পূরণ করুন।";
+      setErrorMessage(message);
+      toast.error(message);
+      return;
+    }
+
+    const formData = new FormData(form);
     const email = String(formData.get("email") ?? "").trim();
     const password = String(formData.get("password") ?? "");
 
@@ -23,17 +48,21 @@ const SignInPage = () => {
       const { error } = await authClient.signIn.email({ email, password });
 
       if (error) {
-        setErrorMessage(error.message ?? "সাইন ইন করা যায়নি। আবার চেষ্টা করুন।");
+        const message = error.message ?? "সাইন ইন করা যায়নি। আবার চেষ্টা করুন।";
+        setErrorMessage(message);
+        toast.error(message);
         return;
       }
 
-      router.push("/profile");
+      toast.success("সাইন ইন সফল হয়েছে।");
+      router.push("/");
     } catch (error) {
-      setErrorMessage(
+      const message =
         error instanceof Error
           ? error.message
-          : "সাইন ইন করা যায়নি। আবার চেষ্টা করুন।",
-      );
+          : "সাইন ইন করা যায়নি। আবার চেষ্টা করুন।";
+      setErrorMessage(message);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -47,7 +76,7 @@ const SignInPage = () => {
           বিস্তারিত দাম, বাজার তুলনা ও প্রোফাইল দেখতে অ্যাকাউন্টে ঢুকুন।
         </p>
       </div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         <fieldset className="fieldset border-base-300 rounded-box w-xs border p-4">
           <label className="label font-bold" htmlFor="email">
             ইমেইল
@@ -93,6 +122,8 @@ const SignInPage = () => {
               সাইন আপ করুন
             </Link>
           </p>
+          <div className="divider my-1">অথবা</div>
+          <SocialAuthButtons />
         </fieldset>
       </form>
     </div>

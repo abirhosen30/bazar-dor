@@ -1,5 +1,8 @@
+import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
 import CategorySortControl from "@/components/CategorySortControl";
+import { notFound } from "next/navigation";
+import { BAZARDOR_API_BASE_URL } from "@/lib/bazardor-api";
 
 interface Product {
   id: number;
@@ -18,6 +21,10 @@ interface Product {
 
 type SortOption = "default" | "price-low" | "price-high";
 
+interface Category {
+  id: string;
+}
+
 const CategoryPage = async ({
   params,
   searchParams,
@@ -31,15 +38,31 @@ const CategoryPage = async ({
     requestedSort === "price-low" || requestedSort === "price-high"
       ? requestedSort
       : "default";
-  const res = await fetch(
-    `https://api.api-store.workers.dev/api/bazardor/products?category=${encodeURIComponent(id)}`,
-  );
+  const [categoryResponse, productsResponse] = await Promise.all([
+    fetch(`${BAZARDOR_API_BASE_URL}/categories`),
+    fetch(
+      `${BAZARDOR_API_BASE_URL}/products?category=${encodeURIComponent(id)}`,
+    ),
+  ]);
 
-  if (!res.ok) {
-    throw new Error(`Failed to fetch products for category "${id}" (${res.status})`);
+  if (!categoryResponse.ok) {
+    throw new Error(
+      `Failed to fetch categories (${categoryResponse.status})`,
+    );
   }
 
-  const categoryProducts: Product[] = await res.json();
+  if (!productsResponse.ok) {
+    throw new Error(
+      `Failed to fetch products for category "${id}" (${productsResponse.status})`,
+    );
+  }
+
+  const categories: Category[] = await categoryResponse.json();
+  if (!categories.some((category) => category.id === id)) {
+    notFound();
+  }
+
+  const categoryProducts: Product[] = await productsResponse.json();
   const sortedProducts = [...categoryProducts];
 
   if (sort === "price-low") {
@@ -49,8 +72,8 @@ const CategoryPage = async ({
   }
 
   return (
-    <main className="min-h-screen p-3 sm:p-5">
-      <div className="mx-auto max-w-7xl">
+    <div className="min-h-screen p-3 sm:p-5">
+      <div className="mx-auto max-w-6xl">
         {/* Category Header */}
         <section className="rounded-xl border border-gray-200 bg-[#fbfdfb] p-4">
           <div className="flex items-center gap-3">
@@ -99,11 +122,17 @@ const CategoryPage = async ({
               <p className="text-sm text-gray-500">
                 এই ক্যাটাগরিতে কোনো পণ্য পাওয়া যায়নি।
               </p>
+              <Link
+                href="/"
+                className="btn mt-4 bg-green-700 text-white"
+              >
+                হোম পেজে ফিরে যান
+              </Link>
             </div>
           )}
         </section>
       </div>
-    </main>
+    </div>
   );
 };
 

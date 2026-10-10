@@ -8,7 +8,7 @@ interface Product {
   today: number;
   unit?: string;
   change: {
-    dir: "up" | "down";
+    dir: "up" | "down" | "flat";
     pct: number;
   };
 }
@@ -45,10 +45,16 @@ const ProductCard = ({ product }: { product: Product }) => {
             className={`rounded-full px-2 py-1 text-[9px] font-semibold ${
               product.change.dir === "up"
                 ? "bg-red-50 text-red-600"
-                : "bg-green-50 text-green-600"
+                : product.change.dir === "down"
+                  ? "bg-green-50 text-green-600"
+                  : "bg-gray-100 text-gray-600"
             }`}
           >
-            {product.change.dir === "up" ? "▲" : "▼"}{" "}
+            {product.change.dir === "up"
+              ? "▲"
+              : product.change.dir === "down"
+                ? "▼"
+                : "—"}
             {product.change.pct?.toLocaleString("bn-BD") ?? "০"}%
           </span>
         )}

@@ -2,6 +2,7 @@ import Banner from "@/components/Banner";
 import DecreaseProductsPrice from "@/components/DecreaseProductsPrice";
 import IncreaseProductsPrice from "@/components/IncreaseProductsPrice";
 import ProductCard from "@/components/ProductCard";
+import { BAZARDOR_API_BASE_URL } from "@/lib/bazardor-api";
 
 interface ProductProps {
   id: number;
@@ -18,24 +19,25 @@ interface ProductProps {
 
 
 export default async function Home() {
-  const res = await fetch("https://api.api-store.workers.dev/api/bazardor/products");
+  const res = await fetch(`${BAZARDOR_API_BASE_URL}/products`);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch products (${res.status})`);
+  }
+
   const data: ProductProps[] = await res.json();
   
   const increasedProducts = data.filter(product => product.change.dir === "up").sort((a, b) => b.change.pct - a.change.pct).slice(0, 6);
 
-  const decreasedProducts = data.filter(product => product.change.dir === "down").sort((a, b) => a.change.pct - b.change.pct).slice(0, 6);
-
-
-  console.log(increasedProducts);
+  const decreasedProducts = data.filter(product => product.change.dir === "down").sort((a, b) => b.change.pct - a.change.pct).slice(0, 6);
   
   return (
-    <div className="container mx-auto px-4">
+    <div className="mx-auto max-w-6xl px-4">
       <Banner/>
 
       <IncreaseProductsPrice products={increasedProducts} />
       <DecreaseProductsPrice products={decreasedProducts} />
 
-      <section id="products" className="mt-6 scroll-mt-4">
+      <section id="সব-পণ্য" className="mt-6 scroll-mt-4">
         <h1 className="text-xl font-bold">সব পণ্য</h1>
         <p className="text-sm text-gray-500 mb-3">
           মোট {data.length} টি পণ্য দেখানো হচ্ছে

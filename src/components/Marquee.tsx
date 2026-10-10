@@ -1,5 +1,6 @@
 import Link from "next/link";
 import MarqueeText from "react-marquee-text";
+import { BAZARDOR_API_BASE_URL } from "@/lib/bazardor-api";
 
 interface Product {
   id: number;
@@ -7,18 +8,16 @@ interface Product {
   nameBn: string;
   today: number;
   change: {
-    dir: "up" | "down";
+    dir: "up" | "down" | "flat";
     pct: number;
   };
 }
 
 const Marquee = async () => {
-  const res = await fetch(
-    "https://api.api-store.workers.dev/api/bazardor/products",
-  );
+  const res = await fetch(`${BAZARDOR_API_BASE_URL}/products`);
 
   if (!res.ok) {
-    throw new Error("Failed to fetch product prices");
+    throw new Error(`Failed to fetch product prices (${res.status})`);
   }
 
   const data: Product[] = await res.json();
@@ -40,17 +39,24 @@ const Marquee = async () => {
               </span>
 
               <span className="font-semibold text-gray-900">
-                ৳{product.today}
+                {product.today.toLocaleString("bn-BD")} টাকা/একক
               </span>
 
               <span
-                className={
+                className={`${
                   product.change.dir === "up"
                     ? "text-red-500"
-                    : "text-green-600"
-                }
+                    : product.change.dir === "down"
+                      ? "text-green-600"
+                      : "text-gray-500"
+                }`}
               >
-                {product.change.dir === "up" ? "▲" : "▼"} {product.change.pct}%
+                {product.change.dir === "up"
+                  ? "▲"
+                  : product.change.dir === "down"
+                    ? "▼"
+                    : "—"}{" "}
+                {product.change.pct.toLocaleString("bn-BD")}%
               </span>
             </Link>
           ))}

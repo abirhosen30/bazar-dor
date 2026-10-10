@@ -1,5 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { getAuth } from "@/lib/auth";
+import { BAZARDOR_API_BASE_URL } from "@/lib/bazardor-api";
 
 interface ProductMarket {
   market: string;
@@ -15,6 +19,8 @@ interface Product {
   category: string;
   categoryNameBn: string;
   categoryIcon: string;
+  subtitle?: string;
+  description?: string;
   image: string;
   unit: string;
   today: number;
@@ -51,6 +57,14 @@ const ProductDetailsPage = async ({
 }: {
   params: Promise<{ slug: string }>;
 }) => {
+  const session = await getAuth().api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    redirect("/sign-in?notice=login-required");
+  }
+
   const { slug } = await params;
 
   if (!/^\d+$/.test(slug)) {
@@ -58,7 +72,7 @@ const ProductDetailsPage = async ({
   }
 
   const response = await fetch(
-    `https://api.api-store.workers.dev/api/bazardor/products/${encodeURIComponent(slug)}`,
+    `${BAZARDOR_API_BASE_URL}/products/${encodeURIComponent(slug)}`,
   );
 
   if (response.status === 404) {
@@ -70,6 +84,17 @@ const ProductDetailsPage = async ({
 
   const product: Product = await response.json();
   const unitLabel = getUnitLabel(product.unit);
+  const markets = product.markets ?? [];
+  const lowestPrice = markets.length
+    ? Math.min(...markets.map((market) => market.min))
+    : null;
+  const highestPrice = markets.length
+    ? Math.max(...markets.map((market) => market.max))
+    : null;
+  const averagePrice = markets.length
+    ? markets.reduce((sum, market) => sum + (market.min + market.max) / 2, 0) /
+      markets.length
+    : null;
   const changeColor =
     product.change.dir === "up"
       ? "text-red-600"
@@ -79,7 +104,7 @@ const ProductDetailsPage = async ({
 
   return (
     <div className="min-h-screen p-3 sm:p-5">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-6xl">
         <nav aria-label="Breadcrumb" className="mb-4 text-xs text-gray-500">
           <Link className="hover:text-green-700" href="/">
             হোম
@@ -111,9 +136,20 @@ const ProductDetailsPage = async ({
               <h1 className="mt-1 text-lg font-bold text-gray-800 sm:text-xl">
                 {product.nameBn}
               </h1>
+              <p className="mt-1 text-xs text-gray-600">
+                {product.subtitle ??
+                  product.description ??
+                  `${product.categoryNameBn} বিভাগের সর্বশেষ বাজারদর`}
+              </p>
               <p className="mt-1 text-xs text-gray-500">
                 প্রতি {unitLabel} বাজারদর
               </p>
+              <Link
+                href={`/category/${encodeURIComponent(product.category)}`}
+                className="mt-2 inline-flex rounded-full bg-green-50 px-2 py-1 text-[10px] font-medium text-green-800"
+              >
+                {product.categoryIcon} {product.categoryNameBn}
+              </Link>
             </div>
           </div>
 
@@ -129,7 +165,7 @@ const ProductDetailsPage = async ({
                 : product.change.dir === "down"
                   ? "▼"
                   : "−"}{" "}
-              {formatPrice(product.change.pct)}%
+              {product.change.pct.toLocaleString("bn-BD") }%
             </p>
           </div>
         </section>
@@ -141,6 +177,9 @@ const ProductDetailsPage = async ({
               { label: "আজকের দাম", price: product.today, tone: "text-green-700" },
               { label: "গতকালের দাম", price: product.yesterday, tone: "text-gray-800" },
               { label: "গত সপ্তাহের দাম", price: product.lastWeek, tone: "text-gray-800" },
+              { label: "সর্বনিম্ন দাম", price: lowestPrice, tone: "text-gray-800" },
+              { label: "সর্বোচ্চ দাম", price: highestPrice, tone: "text-gray-800" },
+              { label: "গড় দাম", price: averagePrice, tone: "text-gray-800" },
             ].map(({ label, price, tone }) => (
               <div
                 key={label}
@@ -148,8 +187,10 @@ const ProductDetailsPage = async ({
               >
                 <p className="text-xs text-gray-500">{label}</p>
                 <p className={`mt-1 text-base font-bold ${tone}`}>
-                  ৳{formatPrice(price)}{" "}
-                  <span className="text-xs font-normal">/ {unitLabel}</span>
+                  {price === null ? "তথ্য নেই" : `৳${formatPrice(price)}`}{" "}
+                  {price !== null && (
+                    <span className="text-xs font-normal">/ {unitLabel}</span>
+                  )}
                 </p>
               </div>
             ))}
@@ -158,7 +199,7 @@ const ProductDetailsPage = async ({
           <h2 className="mt-5 text-sm font-bold text-gray-800">
             বাজারভিত্তিক আজকের দাম
           </h2>
-          {product.markets.length > 0 ? (
+          {markets.length > 0 ? (
             <div className="mt-3 overflow-x-auto rounded-lg border border-gray-200">
               <table className="w-full min-w-[520px] border-collapse text-left text-xs">
                 <thead className="bg-[#f0f5f1] text-gray-600">
@@ -174,7 +215,7 @@ const ProductDetailsPage = async ({
                   </tr>
                 </thead>
                 <tbody>
-                  {product.markets.map((market) => (
+                  {markets.map((market) => (
                     <tr
                       key={`${market.market}-${market.division}`}
                       className="border-t border-gray-200"

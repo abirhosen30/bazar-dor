@@ -1,28 +1,24 @@
-import Link from 'next/link';
+import NavbarLinks from './NavbarLinks';
+import { BAZARDOR_API_BASE_URL } from "@/lib/bazardor-api";
 
-interface navbarProps {
+interface Category {
   id: string;
   nameBn: string;
   icon: string;
 }
 
 const Navbar = async () => {
-  const rec = await fetch("https://api.api-store.workers.dev/api/bazardor/categories");
-  const data = await rec.json();
+  const rec = await fetch(`${BAZARDOR_API_BASE_URL}/categories`);
+  if (!rec.ok) {
+    throw new Error(`Failed to fetch categories (${rec.status})`);
+  }
+  const data: Category[] = await rec.json();
+
   return (
     <div className='border-b-2 border-gray-100'>
-
-    
-    <div className='flex gap-4 py-5 container mx-auto'>
-      {
-        data.map((item: navbarProps) => <Link className="px-2 py-1 hover:bg-gray-200 rounded" key={item.id} href={`/category/${item.id}`}>
-          <div className='flex items-center justify-center gap-2'>
-            <p>{item.icon}</p>
-            <p className='text-[14px] font-semibold'>{item.nameBn}</p>
-          </div>
-        </Link>)
-      }
-    </div>
+      <div className="mx-auto max-w-6xl px-4">
+        <NavbarLinks categories={data} />
+      </div>
     </div>
   );
 };

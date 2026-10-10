@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import toast from "react-hot-toast";
 
 const UserInfoButton = () => {
   const [signOutError, setSignOutError] = useState("");
@@ -76,13 +77,17 @@ const UserInfoButton = () => {
                 setSignOutError(
                   error.message ?? "সাইন আউট করা যায়নি। আবার চেষ্টা করুন।",
                 );
+                toast.error(error.message ?? "সাইন আউট করা যায়নি। আবার চেষ্টা করুন।");
+                return;
               }
+              toast.success("সাইন আউট সফল হয়েছে।");
             } catch (error) {
-              setSignOutError(
+              const message =
                 error instanceof Error
                   ? error.message
-                  : "সাইন আউট করা যায়নি। আবার চেষ্টা করুন।",
-              );
+                  : "সাইন আউট করা যায়নি। আবার চেষ্টা করুন।";
+              setSignOutError(message);
+              toast.error(message);
             }
           }}
           className="mt-2 w-full rounded-lg py-2 text-left font-medium text-red-600 hover:bg-red-50"

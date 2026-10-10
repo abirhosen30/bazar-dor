@@ -33,16 +33,22 @@ const CategorySortControl = ({ sort }: { sort: SortOption }) => {
   return (
     <label className="flex items-center gap-2 text-xs text-gray-500">
       সাজান
-      <select
-        aria-label="পণ্য সাজান"
-        value={sort}
-        onChange={(event) => handleSortChange(event.target.value)}
-        className="rounded-md border border-gray-200 bg-white px-2 py-1 text-xs text-gray-700 outline-none focus:border-green-700"
-      >
-        <option value="default">ডিফল্ট</option>
-        <option value="price-low">দাম: কম থেকে বেশি</option>
-        <option value="price-high">দাম: বেশি থেকে কম</option>
-      </select>
+      <span className="relative">
+        <select
+          aria-label="পণ্য সাজান"
+          value={sort}
+          onChange={(event) => handleSortChange(event.target.value)}
+          className="appearance-none rounded-md border border-gray-200 bg-white py-1 pl-2 pr-7 text-xs text-gray-700 outline-none focus:border-green-700"
+        >
+          <option value="default">ডিফল্ট</option>
+          <option value="price-low">দাম: কম থেকে বেশি</option>
+          <option value="price-high">দাম: বেশি থেকে কম</option>
+        </select>
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute right-2 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rotate-45 border-b border-r border-gray-500"
+        />
+      </span>
     </label>
   );
 };
