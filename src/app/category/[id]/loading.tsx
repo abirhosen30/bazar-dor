@@ -7,7 +7,7 @@ export default function CategoryLoading() {
     >
       <div className="h-20 rounded-xl bg-gray-100" />
       <div className="h-12 rounded-xl bg-gray-100" />
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {Array.from({ length: 6 }, (_, index) => (
           <div key={index} className="h-28 rounded-xl bg-gray-100" />
         ))}

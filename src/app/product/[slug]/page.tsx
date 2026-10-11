@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { getAuth } from "@/lib/auth";
 import { BAZARDOR_API_BASE_URL } from "@/lib/bazardor-api";
+import { formatChangePercent, getUnitLabel } from "@/lib/product-format";
 
 interface ProductMarket {
   market: string;
@@ -37,36 +38,12 @@ interface Product {
 
 const formatPrice = (price: number) => price.toLocaleString("bn-BD");
 
-const getUnitLabel = (unit: string) => {
-  switch (unit.toLowerCase()) {
-    case "kg":
-      return "কেজি";
-    case "liter":
-    case "litre":
-    case "l":
-      return "লিটার";
-    case "pcs":
-    case "piece":
-      return "টি";
-    default:
-      return unit;
-  }
-};
-
 const ProductDetailsPage = async ({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) => {
   await connection();
-
-  const session = await getAuth().api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    redirect("/sign-in?notice=login-required");
-  }
 
   const { slug } = await params;
 
@@ -83,6 +60,41 @@ const ProductDetailsPage = async ({
   }
   if (!response.ok) {
     throw new Error(`Failed to fetch product "${slug}" (${response.status})`);
+  }
+
+  let sessionResult;
+  try {
+    sessionResult = {
+      session: await getAuth().api.getSession({
+        headers: await headers(),
+      }),
+    };
+  } catch (error) {
+    console.error("Failed to retrieve session for product details", error);
+    sessionResult = { error: true as const };
+  }
+
+  if ("error" in sessionResult) {
+    return (
+      <section className="mx-auto my-10 max-w-3xl rounded-xl border border-red-200 bg-red-50 p-6 text-center">
+        <h1 className="text-lg font-bold text-gray-900">
+          এখন পণ্যের তথ্য দেখানো যাচ্ছে না
+        </h1>
+        <p className="mt-2 text-sm text-gray-600">
+          অ্যাকাউন্ট যাচাই করতে সাময়িক সমস্যা হচ্ছে। কিছুক্ষণ পর আবার চেষ্টা করুন।
+        </p>
+        <Link
+          href={`/product/${encodeURIComponent(slug)}`}
+          className="btn mt-4 bg-green-700 text-white"
+        >
+          আবার চেষ্টা করুন
+        </Link>
+      </section>
+    );
+  }
+
+  if (!sessionResult.session) {
+    redirect("/sign-in?notice=login-required");
   }
 
   const product: Product = await response.json();
@@ -133,9 +145,6 @@ const ProductDetailsPage = async ({
               {product.image || product.categoryIcon}
             </span>
             <div>
-              <p className="text-xs text-gray-500">
-                {product.categoryIcon} {product.categoryNameBn}
-              </p>
               <h1 className="mt-1 text-lg font-bold text-gray-800 sm:text-xl">
                 {product.nameBn}
               </h1>
@@ -147,12 +156,6 @@ const ProductDetailsPage = async ({
               <p className="mt-1 text-xs text-gray-500">
                 প্রতি {unitLabel} বাজারদর
               </p>
-              <Link
-                href={`/category/${encodeURIComponent(product.category)}`}
-                className="mt-2 inline-flex rounded-full bg-green-50 px-2 py-1 text-[10px] font-medium text-green-800"
-              >
-                {product.categoryIcon} {product.categoryNameBn}
-              </Link>
             </div>
           </div>
 
@@ -161,14 +164,13 @@ const ProductDetailsPage = async ({
             <p className="mt-1 text-xl font-bold text-gray-900">
               {formatPrice(product.today)}
             </p>
-            <p className="text-[10px] text-gray-500">টাকা / {unitLabel}</p>
             <p className={`mt-1 text-xs font-semibold ${changeColor}`}>
               {product.change.dir === "up"
                 ? "▲"
                 : product.change.dir === "down"
                   ? "▼"
                   : "−"}{" "}
-              {product.change.pct.toLocaleString("bn-BD") }%
+              {formatChangePercent(product.change.pct)}%
             </p>
           </div>
         </section>
@@ -190,10 +192,7 @@ const ProductDetailsPage = async ({
               >
                 <p className="text-xs text-gray-500">{label}</p>
                 <p className={`mt-1 text-base font-bold ${tone}`}>
-                  {price === null ? "তথ্য নেই" : `৳${formatPrice(price)}`}{" "}
-                  {price !== null && (
-                    <span className="text-xs font-normal">/ {unitLabel}</span>
-                  )}
+                  {price === null ? "তথ্য নেই" : `৳${formatPrice(price)}`}
                 </p>
               </div>
             ))}

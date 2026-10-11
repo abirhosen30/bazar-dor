@@ -1,53 +1,15 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { authClient } from "@/lib/auth-client";
 import toast from "react-hot-toast";
 
 const ProfilePage = () => {
-  const { data: session, isPending, refetch } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
-  const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [name, setName] = useState("");
-  const [isSavingName, setIsSavingName] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
-
-  const handleSaveName = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const updatedName = name.trim();
-
-    if (!updatedName) {
-      toast.error("নাম লিখুন।");
-      return;
-    }
-
-    if (updatedName === user?.name) {
-      setIsEditingProfile(false);
-      return;
-    }
-
-    setIsSavingName(true);
-    try {
-      const { error } = await authClient.updateUser({ name: updatedName });
-
-      if (error) {
-        toast.error(error.message ?? "নাম আপডেট করা যায়নি।");
-        return;
-      }
-
-      await refetch();
-      setIsEditingProfile(false);
-      toast.success("নাম আপডেট হয়েছে।");
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "নাম আপডেট করা যায়নি।",
-      );
-    } finally {
-      setIsSavingName(false);
-    }
-  };
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
@@ -144,62 +106,20 @@ const ProfilePage = () => {
         >
         <div className="flex items-center justify-between gap-3">
           <h2 className="font-bold text-gray-900">তথ্য</h2>
-          <button
-            type="button"
-            aria-expanded={isEditingProfile}
-            aria-controls="profile-name-form"
-            onClick={() => {
-              if (!isEditingProfile) {
-                setName(user.name);
-              }
-              setIsEditingProfile((isEditing) => !isEditing);
-            }}
-            disabled={isSavingName}
+          <Link
+            href="/profile/update"
             className="text-sm font-medium text-green-700 underline underline-offset-2"
           >
-            {isEditingProfile ? "বন্ধ করুন" : "Edit Profile"}
-          </button>
+            তথ্য আপডেট
+          </Link>
         </div>
 
-        {isEditingProfile ? (
-          <form
-            id="profile-name-form"
-            onSubmit={handleSaveName}
-            className="mt-6"
-          >
-            <label
-              htmlFor="profile-name"
-              className="mb-2 block text-sm font-medium text-gray-800"
-            >
-              নাম
-            </label>
-            <input
-              id="profile-name"
-              type="text"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              autoComplete="name"
-              maxLength={100}
-              required
-              className="input input-bordered w-full border-[#dce7df] bg-transparent"
-              disabled={isSavingName}
-            />
-            <button
-              type="submit"
-              className="btn mt-3 w-full bg-green-700 text-white shadow-sm hover:bg-green-800"
-              disabled={isSavingName}
-            >
-              {isSavingName ? "আপডেট হচ্ছে..." : "আপডেট"}
-            </button>
-          </form>
-        ) : (
-          <div className="mt-6">
-            <p className="mb-2 text-sm font-medium text-gray-800">নাম</p>
-            <p className="rounded-lg border border-[#dce7df] px-4 py-3 text-gray-700">
-              {user.name}
-            </p>
-          </div>
-        )}
+        <div className="mt-6">
+          <p className="mb-2 text-sm font-medium text-gray-800">নাম</p>
+          <p className="rounded-lg border border-[#dce7df] px-4 py-3 text-gray-700">
+            {user.name}
+          </p>
+        </div>
         </div>
       </section>
     </div>

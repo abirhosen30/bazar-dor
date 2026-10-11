@@ -3,6 +3,7 @@ import ProductCard from "@/components/ProductCard";
 import CategorySortControl from "@/components/CategorySortControl";
 import { notFound } from "next/navigation";
 import { BAZARDOR_API_BASE_URL } from "@/lib/bazardor-api";
+import { formatCount } from "@/lib/product-format";
 
 interface Product {
   id: number;
@@ -87,7 +88,7 @@ const CategoryPage = async ({
               </h1>
 
               <p className="mt-1 text-xs text-gray-500">
-                {categoryProducts.length} টি পণ্যের আজকের দাম ও পরিবর্তন
+                {formatCount(categoryProducts.length)} টি পণ্যের আজকের দাম ও পরিবর্তন
               </p>
             </div>
           </div>
@@ -96,7 +97,7 @@ const CategoryPage = async ({
         {/* Sort Bar */}
         <section className="mt-3 flex items-center justify-between rounded-xl border border-gray-200 bg-[#fbfdfb] px-4 py-3">
           <p className="text-xs text-gray-500">
-            মোট {sortedProducts.length} টি পণ্য
+            মোট {formatCount(sortedProducts.length)} টি পণ্য
           </p>
 
           <CategorySortControl sort={sort} />
@@ -109,7 +110,7 @@ const CategoryPage = async ({
           </p>
 
           {sortedProducts.length > 0 ? (
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {sortedProducts.map((product, index) => (
                 <ProductCard
                   key={product.id ?? `${product.nameBn}-${index}`}

@@ -2,6 +2,18 @@ import { betterAuth } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "@better-auth/mongo-adapter";
 
+const getOrigin = (url: string | undefined) => {
+  if (!url) {
+    return undefined;
+  }
+
+  const normalizedUrl = /^[a-z][a-z\d+\-.]*:\/\//i.test(url)
+    ? url
+    : `${url.startsWith("localhost") ? "http" : "https"}://${url}`;
+
+  return new URL(normalizedUrl).origin;
+};
+
 const createAuth = () => {
   const mongoUrl = process.env.MONGODB_URL;
   if (!mongoUrl) {
@@ -10,8 +22,24 @@ const createAuth = () => {
 
   const client = new MongoClient(mongoUrl);
   const db = client.db("bazar-dor");
+  const baseURL =
+    process.env.BETTER_AUTH_URL ??
+    getOrigin(process.env.NEXT_PUBLIC_APP_URL) ??
+    getOrigin(process.env.VERCEL_PROJECT_PRODUCTION_URL) ??
+    getOrigin(process.env.VERCEL_URL) ??
+    "http://localhost:3000";
+  const trustedOrigins = [
+    baseURL,
+    getOrigin(process.env.NEXT_PUBLIC_APP_URL),
+    getOrigin(process.env.VERCEL_PROJECT_PRODUCTION_URL),
+    getOrigin(process.env.VERCEL_URL),
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+  ].filter((origin): origin is string => Boolean(origin));
 
   return betterAuth({
+    baseURL,
+    trustedOrigins,
     database: mongodbAdapter(db, {
       client,
     }),

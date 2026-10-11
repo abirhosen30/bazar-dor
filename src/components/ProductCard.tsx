@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { formatChangePercent, getUnitLabel } from "@/lib/product-format";
 
 interface Product {
   id: number;
@@ -27,7 +28,7 @@ const ProductCard = ({ product }: { product: Product }) => {
         <div>
           <h3 className="text-sm font-bold text-gray-800">{product.nameBn}</h3>
           <p className="text-[10px] text-gray-500">
-            {product.unit ?? "প্রতি কেজি"}
+            প্রতি {getUnitLabel(product.unit)}
           </p>
         </div>
       </div>
@@ -44,9 +45,9 @@ const ProductCard = ({ product }: { product: Product }) => {
           <span
             className={`rounded-full px-2 py-1 text-[9px] font-semibold ${
               product.change.dir === "up"
-                ? "bg-red-50 text-red-600"
+                ? "bg-green-50 text-green-600"
                 : product.change.dir === "down"
-                  ? "bg-green-50 text-green-600"
+                  ? "bg-red-50 text-red-600"
                   : "bg-gray-100 text-gray-600"
             }`}
           >
@@ -55,7 +56,8 @@ const ProductCard = ({ product }: { product: Product }) => {
               : product.change.dir === "down"
                 ? "▼"
                 : "—"}
-            {product.change.pct?.toLocaleString("bn-BD") ?? "০"}%
+            {" "}
+            {formatChangePercent(product.change.pct)}%
           </span>
         )}
       </div>

@@ -1,12 +1,14 @@
 import Link from "next/link";
 import MarqueeText from "react-marquee-text";
 import { BAZARDOR_API_BASE_URL } from "@/lib/bazardor-api";
+import { formatChangePercent, getUnitLabel } from "@/lib/product-format";
 
 interface Product {
   id: number;
   categoryIcon: string;
   nameBn: string;
   today: number;
+  unit?: string;
   change: {
     dir: "up" | "down" | "flat";
     pct: number;
@@ -39,15 +41,15 @@ const Marquee = async () => {
               </span>
 
               <span className="font-semibold text-gray-900">
-                {product.today.toLocaleString("bn-BD")} টাকা/একক
+                {product.today.toLocaleString("bn-BD")} টাকা/{getUnitLabel(product.unit)}
               </span>
 
               <span
                 className={`${
                   product.change.dir === "up"
-                    ? "text-red-500"
+                    ? "text-green-600"
                     : product.change.dir === "down"
-                      ? "text-green-600"
+                      ? "text-red-500"
                       : "text-gray-500"
                 }`}
               >
@@ -56,7 +58,7 @@ const Marquee = async () => {
                   : product.change.dir === "down"
                     ? "▼"
                     : "—"}{" "}
-                {product.change.pct.toLocaleString("bn-BD")}%
+                {formatChangePercent(product.change.pct)}%
               </span>
             </Link>
           ))}
