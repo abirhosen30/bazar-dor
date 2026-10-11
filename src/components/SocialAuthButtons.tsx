@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { FaGithub } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 import { authClient } from "@/lib/auth-client";
 import toast from "react-hot-toast";
 
@@ -39,6 +41,7 @@ const SocialAuthButtons = () => {
         disabled={pendingProvider !== null}
         className="btn border-gray-300 bg-white text-gray-800"
       >
+        <FcGoogle aria-hidden="true" className="text-lg" />
         {pendingProvider === "google"
           ? "Google-এ সংযোগ হচ্ছে..."
           : "Google দিয়ে চালিয়ে যান"}
@@ -49,6 +52,7 @@ const SocialAuthButtons = () => {
         disabled={pendingProvider !== null}
         className="btn border-gray-300 bg-white text-gray-800"
       >
+        <FaGithub aria-hidden="true" className="text-lg" />
         {pendingProvider === "github"
           ? "GitHub-এ সংযোগ হচ্ছে..."
           : "GitHub দিয়ে চালিয়ে যান"}
