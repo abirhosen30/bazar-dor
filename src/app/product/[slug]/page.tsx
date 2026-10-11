@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { getAuth } from "@/lib/auth";
 import { BAZARDOR_API_BASE_URL } from "@/lib/bazardor-api";
 
@@ -57,6 +58,8 @@ const ProductDetailsPage = async ({
 }: {
   params: Promise<{ slug: string }>;
 }) => {
+  await connection();
+
   const session = await getAuth().api.getSession({
     headers: await headers(),
   });
