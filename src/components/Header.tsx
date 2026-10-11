@@ -15,9 +15,9 @@ const CurrentDate = async () => {
 
 const Header = () => {
   return (
-    <div>
+     <div>
       <div className="border-b-2 border-gray-100">
-        <div className="flex justify-between container mx-auto items-center px-4 py-2">
+        <div className="flex justify-between mx-auto max-w-6xl items-center px-4 py-2">
           <div className="flex items-center gap-2">
             <Image
               src={logo}
