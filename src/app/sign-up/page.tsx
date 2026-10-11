@@ -143,6 +143,12 @@ const SignUpPage = () => {
           <SocialAuthButtons />
         </fieldset>
       </form>
+      <Link
+        href="/"
+        className="mt-5 text-sm text-gray-500 transition-colors hover:text-green-700"
+      >
+        ← হোম পেজে ফিরে যান
+      </Link>
     </div>
   );
 };
