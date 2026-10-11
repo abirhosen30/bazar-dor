@@ -1,48 +1,112 @@
-# বাজার দর
+# 🛒 Bazar Dor
 
-বাংলাদেশের নিত্যপ্রয়োজনীয় পণ্যের আজকের দাম, দামের পরিবর্তন এবং বাজারভিত্তিক
-তুলনা দেখানোর Next.js অ্যাপ।
+**Bazar Dor** is a modern, responsive web application for browsing market products, comparing prices, and managing a shopping cart — built as part of the Programming Hero assignment **B14-A7**.
 
-## চালু করা
+🔗 **Live Site:** [https://bazar-dor-lime-nine.vercel.app](https://bazar-dor-lime-nine.vercel.app)
 
-Node.js ইনস্টল করে dependency ইনস্টল করুন:
+---
+
+## ✨ Features
+
+- 🛍️ Browse products with name, image, price and category
+- 💰 Clear price display for quick comparison
+- ➕ Add / remove products from the cart
+- 🧮 Real-time total price calculation
+- 🔔 Toast notifications for user actions
+- 📱 Fully responsive design (mobile, tablet, desktop)
+- ⚡ Fast loading and smooth user experience
+
+> Update this list to match the exact features you implemented.
+
+---
+
+## 🧰 Tech Stack
+
+| Category   | Technology                    |
+| ---------- | ----------------------------- |
+| Library    | React                         |
+| Build Tool | Vite                          |
+| Styling    | Tailwind CSS                  |
+| Deployment | Vercel                        |
+
+> Change this table if your project uses different tools (e.g. DaisyUI, React Router, React Toastify).
+
+---
+
+## 📁 Project Structure
+
+```
+bazar-dor/
+├── public/
+├── src/
+│   ├── components/
+│   ├── assets/
+│   ├── App.jsx
+│   └── main.jsx
+├── index.html
+├── package.json
+└── README.md
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18 or later)
+- npm or yarn
+
+### Installation
 
 ```bash
+# 1. Clone the repository
+git clone https://github.com/abirhosen30/bazar-dor.git
+
+# 2. Go to the project folder
+cd bazar-dor
+
+# 3. Install dependencies
 npm install
-```
 
-প্রজেক্টের root-এ `.env` ফাইলে প্রয়োজনীয় environment variable দিন:
-
-```env
-MONGODB_URL=
-BETTER_AUTH_URL=http://localhost:3000
-BETTER_AUTH_SECRET=
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-GITHUB_CLIENT_ID=
-GITHUB_CLIENT_SECRET=
-```
-
-`MONGODB_URL`, `BETTER_AUTH_URL`, এবং `BETTER_AUTH_SECRET` আবশ্যক। Google/GitHub
-OAuth চালু করতে প্রতিটি provider-এর Client ID ও Client Secret যোগ করুন এবং OAuth
-console-এ `http://localhost:3000/api/auth/callback/google` অথবা
-`http://localhost:3000/api/auth/callback/github` callback URL নিবন্ধন করুন।
-Production deploy-এ Vercel-এর Project Settings → Environment Variables-এ একই
-production values যোগ করতে হবে। Secret কখনও source control-এ commit করবেন না।
-
-Development server চালান:
-
-```bash
+# 4. Start the development server
 npm run dev
 ```
 
-অ্যাপটি [http://localhost:3000](http://localhost:3000)-এ খুলুন।
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-## যাচাই
+### Build for production
 
 ```bash
-npm run lint
 npm run build
+npm run preview
 ```
 
-পণ্যের তথ্য `https://openapi.programming-hero.com/api/bazardor` API থেকে আসে।
+---
+
+## 🌐 Deployment
+
+This project is deployed on **Vercel**. Every push to the `main` branch triggers an automatic redeploy.
+
+---
+
+## 🤝 Contributing
+
+Suggestions and improvements are welcome!
+
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature/your-feature`)
+3. Commit your changes (`git commit -m "Add your feature"`)
+4. Push to the branch (`git push origin feature/your-feature`)
+5. Open a Pull Request
+
+---
+
+## 👨‍💻 Author
+
+**Abir Hosen**
+- GitHub: [@abirhosen30](https://github.com/abirhosen30)
+
+---
+
+⭐ If you like this project, give it a star!
